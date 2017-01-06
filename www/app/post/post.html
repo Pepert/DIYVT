@@ -1,0 +1,29 @@
+<ion-view view-title="{{category}}">
+  <ion-nav-buttons side="right">
+    <button class="button button-icon button-clear ion-plus" ng-click="options()">
+    </button>
+  </ion-nav-buttons>
+  <ion-content>
+
+    <div id="menupost" ng-show="menupostopen" ng-click="goToAddPost()">
+      <p>Add a new post</p>
+    </div>
+
+    <div ng-repeat="post in posts">
+      <div>
+        {{post.title}}
+      </div>
+      <div>
+        {{post.content}}
+      </div>
+      <div>
+        {{post.user.firstname}} {{post.date}}
+      </div>
+
+      <button class="button button-block button-positive" ng-click="goToPost(post.id)">See full post</button>
+
+      <hr/>
+    </div>
+
+  </ion-content>
+</ion-view>

@@ -1,0 +1,65 @@
+<ion-view view-title="{{post.title}}">
+  <ion-nav-buttons side="right">
+    <button class="button button-icon button-clear ion-plus" ng-click="options()">
+    </button>
+  </ion-nav-buttons>
+  <ion-content>
+
+    <div id="menupost" ng-show="menupostopen" ng-click="goToAddPost()">
+      <p>Add a new post</p>
+    </div>
+
+    <div>
+      <button class="button button-block button-positive" ng-click="addToFavourites(post.id)">Add to favourites</button>
+      <button class="button button-block button-positive" ng-click="deleteFromFavourites(post.id)">Delete from favourites</button>
+
+      <ion-scroll direction="x">
+        <p>Images</p>
+        <img ng-repeat="image in images" ng-src="{{image}}" class="thumbnail" ng-click="showImages($index)"  style="width: 100px; height: 100px;">
+        <p>Videos</p>
+        <img ng-repeat="video in videos" ng-src="{{ video.replace('.mp4', '.png') }}" class="thumbnail" ng-click="playVideo($index)"  style="width: 100px; height: 100px;">
+      </ion-scroll>
+
+      <div>
+        {{post.title}}
+      </div>
+      <div>
+        {{post.content}}
+      </div>
+      <div>
+        {{post.user.firstname}} {{post.date}}
+      </div>
+
+      <div ng-repeat="comment in post.comments">
+        <div>
+          Upvote = {{comment.upvote}}, downvote = {{comment.downvote}}
+        </div>
+        <div>
+          {{comment.text}}
+        </div>
+        <div>
+          {{comment.user.firstname}}, le {{comment.date}}
+        </div>
+      </div>
+
+      <button ng-hide="commentopen" class="button button-block button-positive" ng-click="openComment()">Add comment</button>
+
+      <form ng-show="commentopen" ng-submit="postComment(post.id)">
+        <div class="list">
+          <label class="item item-input">
+            <span class="input-label">Your comment</span>
+            <textarea rows="5" ng-model="commentData.content"></textarea>
+          </label>
+          <label class="item">
+            <button class="button button-block button-positive" type="submit">Post comment</button>
+          </label>
+        </div>
+      </form>
+
+      <button ng-show="commentopen" class="button button-block button-positive" ng-click="closeComment()">Cancel</button>
+
+      <hr/>
+    </div>
+
+  </ion-content>
+</ion-view>

@@ -1,0 +1,29 @@
+<ion-view>
+  <ion-header-bar>
+    <h1 class="title">Profile infos</h1>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="updateProfile()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">First name</span>
+          <input type="text" ng-model="loginData.firstname">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Last name</span>
+          <input type="text" ng-model="loginData.lastname">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Screen name</span>
+          <input type="text" ng-model="loginData.screenname">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" ng-click="changePass()">Change my password</button>
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Update profile informations</button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,12 @@
+#menupost {
+  position: absolute;
+  right: 0;
+  border: black 3px solid;
+  border-radius: 0 0 5px 5px;
+  padding: 8px 10px 0 10px;
+  background-color: white;
+}
+
+.thumbnail {
+  display: inline-block;
+}
