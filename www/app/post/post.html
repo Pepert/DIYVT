@@ -1,7 +1,6 @@
 <ion-view view-title="{{category}}">
   <ion-nav-buttons side="right">
-    <button class="button button-icon button-clear ion-plus" ng-click="options()">
-    </button>
+    <button ng-if="identified == true" class="button button-icon button-clear ion-plus" ng-click="options()"></button>
   </ion-nav-buttons>
   <ion-content>
 

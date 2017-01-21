@@ -18,26 +18,26 @@ angular.module('diyvt.managevtCtrl', [])
 
   .controller('ManagevtCtrl', function($scope, $state, $ionicModal, $timeout) {
     $scope.goToVtExercises = function() {
-      $state.go('app.post', {category: "vtexercises"});
+      $state.go('app.post', {category: "VT exercises"});
     };
 
     $scope.goToVtTools = function() {
-      $state.go('app.post', {category: "vttools"});
+      $state.go('app.post', {category: "VT tools"});
     };
 
     $scope.goToOptics = function() {
-      $state.go('app.post', {category: "optics"});
+      $state.go('app.post', {category: "Optics"});
     };
 
     $scope.goToConditions = function() {
-      $state.go('app.post', {category: "conditions"});
+      $state.go('app.post', {category: "Conditions & symptoms"});
     };
 
     $scope.goToSurgery = function() {
-      $state.go('app.post', {category: "surgery"});
+      $state.go('app.post', {category: "VT or eye surgery"});
     };
 
     $scope.goToTips = function() {
-      $state.go('app.post', {category: "tips"});
+      $state.go('app.post', {category: "Tips to foster VT"});
     };
   });

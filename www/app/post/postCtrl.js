@@ -22,6 +22,13 @@ angular.module('diyvt.postCtrl', [])
     $scope.menupostopen = false;
     $scope.posts = null;
     $scope.commentData = {};
+    $scope.identified = false;
+
+    if(window.localStorage.getItem('user') >= 0) {
+      $scope.identified = true;
+    }
+
+    console.log(window.localStorage.getItem('user'));
 
     $scope.options = function() {
       if(!$scope.menupostopen) {
@@ -44,6 +51,6 @@ angular.module('diyvt.postCtrl', [])
     };
 
     $scope.goToAddPost = function() {
-      $state.go('app.newpost');
+      $state.go('app.newpost', {category: $stateParams.category});
     };
   });

@@ -5,7 +5,8 @@ angular.module('diyvt.addPostCtrl', [])
     $stateProvider
 
       .state('app.newpost', {
-        url: '/newpost',
+        cache: false,
+        url: '/newpost/:category',
         views: {
           'menuContent': {
             templateUrl: 'app/addpost/addPost.html',
@@ -17,20 +18,53 @@ angular.module('diyvt.addPostCtrl', [])
     $urlRouterProvider.otherwise('/app/newpost');
   })
 
-  .controller('AddPostCtrl', function($scope, $http, $state, $cordovaCamera, $cordovaFile, $cordovaFileTransfer, $cordovaDevice, $ionicPopup, $ionicLoading) {
-
+  .controller('AddPostCtrl', function(
+    $scope,
+    $http,
+    $state,
+    $stateParams,
+    $cordovaCamera,
+    $cordovaFile,
+    $cordovaFileTransfer,
+    $cordovaDevice,
+    $ionicPopup,
+    $ionicLoading
+  ) {
     $scope.postData = {};
     $scope.medias = {};
     $scope.thumbnails = {};
     $scope.videoThumbnails = {};
     $scope.links = {};
     $scope.data = {};
+    var post;
+    $scope.fromCategory = $stateParams.category;
+    $scope.categories = [
+      {value: "Personal stories", name: "Personal stories"},
+      {value: "Scientific", name: "Scientific"},
+      {value: "VT books", name: "VT books"},
+      {value: "VT exercises", name: "VT exercises"},
+      {value: "VT tools", name: "VT tools"},
+      {value: "Optics", name: "Optics"},
+      {value: "Conditions & symptoms", name: "Conditions & symptoms"},
+      {value: "VT or eye surgery", name: "VT or eye surgery"},
+      {value: "Tips to foster VT", name: "Tips to foster VT"}
+    ];
+    $scope.subcategories = [
+      {value: "sub1", name: "sub1"},
+      {value: "sub2", name: "sub2"}
+    ];
     var medias = [];
     var thumbnails = [];
     var videoThumbnails = [];
     var urls = [];
     var links = [];
     var options = {};
+
+    /*
+    $scope.updateSubcategories = function() {
+      $scope.subcategory = $scope.postData.category;
+    };
+    */
 
     $scope.loadMedia = function() {
       $ionicPopup.show({
@@ -246,93 +280,140 @@ angular.module('diyvt.addPostCtrl', [])
     };
 
     $scope.createNewPost = function(){
-      // Destination URL
-      var url = "http://diyvt.leonard-peronnet.com/upload";
-
-      angular.forEach(videoThumbnails, function(value) {
-        // File for Upload
-        var targetPath = cordova.file.dataDirectory + value;
-        urls.push("http://diyvt.leonard-peronnet.com/uploads/" + value);
-
-        // File name only
-        var filename = value;
-
-        var options = {
-          fileKey: "file",
-          fileName: filename,
-          chunkedMode: false,
-          mimeType: "multipart/form-data",
-          params : {'fileName': filename}
-        };
-
-        $cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
-          console.log(result);
-        }, function(err) {
-          console.log(err);
+      if($scope.postData.category == null) {
+        $ionicPopup.alert({
+          title: 'No category',
+          template: 'You need to select a main category associated to this post'
         });
-      });
+      } else if($scope.postData.title == null || $scope.postData.content == null) {
+        $ionicPopup.alert({
+          title: 'Empty field',
+          template: 'You need to add a title and some content'
+        });
+      } else {
+        $ionicLoading.show({
+          template: 'Loading...'
+        });
 
-      medias.forEach(function(value, index, array) {
-        // File for Upload
-        var targetPath = cordova.file.dataDirectory + value;
-        urls.push("http://diyvt.leonard-peronnet.com/uploads/" + value);
+        // Destination URL
+        var url = "http://diyvt.leonard-peronnet.com/upload";
 
-        // File name only
-        var filename = value;
+        if(videoThumbnails.length > 0) {
+          angular.forEach(videoThumbnails, function(value) {
+            // File for Upload
+            var targetPath = cordova.file.dataDirectory + value;
+            urls.push("http://diyvt.leonard-peronnet.com/uploads/" + value);
 
-        var options = {
-          fileKey: "file",
-          fileName: filename,
-          chunkedMode: false,
-          mimeType: "multipart/form-data",
-          params : {'fileName': filename}
-        };
+            // File name only
+            var filename = value;
 
-        $cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
-          console.log(result);
-          if (index === array.length - 1){
-            $scope.showAlert('Success', 'Post upload finished.');
-            medias = [];
-            thumbnails = [];
-            videoThumbnails = [];
-
-            $scope.medias = medias;
-            $scope.thumbnails = thumbnails;
-            $scope.videoThumbnails = videoThumbnails;
-
-            var link = 'http://diyvt.leonard-peronnet.com/posts';
-
-            var category = $scope.postData.category;
-            var subcategory = $scope.postData.subcategory;
-            var title = $scope.postData.title;
-            var content = $scope.postData.content;
-            var userId = window.localStorage.getItem('user');
-
-            var newPost = {
-              category: category,
-              content: content,
-              subcategory: subcategory,
-              title: title
+            var options = {
+              fileKey: "file",
+              fileName: filename,
+              chunkedMode: false,
+              mimeType: "multipart/form-data",
+              params : {'fileName': filename}
             };
 
-            var data = {
-              user_id: userId,
-              post: newPost,
-              urls: urls,
-              links: links
-            };
-
-            console.log(urls);
-
-            $http.post(link, data).then(function (res){
-              console.log('nouveau post enregistré');
-              $state.go('app.post', {category: category});
+            $cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
+              console.log(result);
+            }, function(err) {
+              console.log(err);
             });
-          }
-        }, function(err) {
-          console.log(err);
-        });
-      });
+          });
+        }
+
+        if(medias.length > 0) {
+          medias.forEach(function(value, index, array) {
+            // File for Upload
+            var targetPath = cordova.file.dataDirectory + value;
+            urls.push("http://diyvt.leonard-peronnet.com/uploads/" + value);
+
+            // File name only
+            var filename = value;
+
+            var options = {
+              fileKey: "file",
+              fileName: filename,
+              chunkedMode: false,
+              mimeType: "multipart/form-data",
+              params : {'fileName': filename}
+            };
+
+            $cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
+              console.log(result);
+              if (index === array.length - 1){
+                $scope.showAlert('Success', 'Post upload finished.');
+                medias = [];
+                thumbnails = [];
+                videoThumbnails = [];
+
+                $scope.medias = medias;
+                $scope.thumbnails = thumbnails;
+                $scope.videoThumbnails = videoThumbnails;
+
+                var link = 'http://diyvt.leonard-peronnet.com/posts';
+
+                var category = $scope.postData.category;
+                var subcategory = $scope.postData.subcategory;
+                var title = $scope.postData.title;
+                var content = $scope.postData.content;
+                var userId = window.localStorage.getItem('user');
+
+                var newPost = {
+                  category: category,
+                  content: content,
+                  subcategory: subcategory,
+                  title: title
+                };
+
+                var data = {
+                  user_id: userId,
+                  post: newPost,
+                  urls: urls,
+                  links: links
+                };
+
+                $http.post(link, data).then(function (res){
+                  $ionicLoading.hide();
+                  console.log('nouveau post enregistré');
+                  $state.go('app.post', {category: category});
+                });
+              }
+            }, function(err) {
+              console.log(err);
+            });
+          });
+        } else {
+          var link = 'http://diyvt.leonard-peronnet.com/posts';
+
+          var category = $scope.postData.category;
+          var subcategory = $scope.postData.subcategory;
+          var title = $scope.postData.title;
+          var content = $scope.postData.content;
+          var userId = window.localStorage.getItem('user');
+
+          var newPost = {
+            category: category,
+            content: content,
+            subcategory: subcategory,
+            title: title
+          };
+
+          var data = {
+            user_id: userId,
+            post: newPost,
+            urls: urls,
+            links: links
+          };
+
+          $http.post(link, data).then(function (res){
+            $ionicLoading.hide();
+            console.log('nouveau post enregistré');
+            $state.go('app.post', {category: category});
+          });
+        }
+      }
     };
 
     $scope.showAlert = function(title, msg) {
@@ -342,8 +423,4 @@ angular.module('diyvt.addPostCtrl', [])
         cssClass: 'popup-regular'
       });
     };
-
-
-
-
   });

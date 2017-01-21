@@ -1,41 +1,52 @@
-<ion-view>
-  <ion-header-bar>
-    <h1 class="title">Login</h1>
-  </ion-header-bar>
+<ion-view view-title="Login">
   <ion-content>
-    <form ng-submit="doLogin()">
-      <div class="list">
-        <label class="item item-input">
-          <span class="input-label">Email</span>
-          <input type="text" ng-model="loginData.email">
-        </label>
-        <label class="item item-input">
-          <span class="input-label">Password</span>
-          <input type="password" ng-model="loginData.password">
-        </label>
-        <label class="item">
-          <button class="button button-block button-positive" type="submit">Log in</button>
-        </label>
+    <div ng-if="connected == false">
+      <form ng-submit="doLogin()">
+        <div class="list">
+          <label class="item item-input">
+            <span class="input-label">Email</span>
+            <input type="text" ng-model="loginData.email">
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Password</span>
+            <input type="password" ng-model="loginData.password">
+          </label>
+          <label class="item">
+            <button class="button button-block button-positive" type="submit">Log in</button>
+          </label>
+          <label class="item center-parent">
+            <span class="center-child">You forgot your password ? Click<button type="button" ng-click="getNewPass()" class="blue-link">here</button></span>
+          </label>
+        </div>
+      </form>
+
+      <div class="item center-parent">
+        <div class="center-child">
+          <div>
+            <span>Or sign in through your favourite social network :</span>
+          </div>
+
+          <div class="text-center">
+            <div class="facebook-sign-in logo-zone" ng-click="facebookSignIn()">
+              <img src="app/login/icons/facebook.png" class="network-button"/>
+              <p>Facebook</p>
+            </div>
+            <div class="google-sign-in logo-zone" ng-click="googleSignIn()">
+              <img src="app/login/icons/google.png" class="network-button"/>
+              <p>Google +</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
 
-    <label class="item item-input">
-      <span>You forgot your password ? Click <span ng-click="getNewPass()">here</span></span>
-    </label>
+      <button type="button" class="button button-block button-positive" ng-click="goToCreate()">Create a new account</button>
+      <button type="button" class="button button-block button-positive" ng-click="guestLogin()">Log in as a guest</button>
 
+    </div>
 
-
-
-    <a class="facebook-sign-in button button-block" ng-click="facebookSignIn()">Sign in with Facebook</a>
-
-    <a class="google-sign-in button button-block" ng-click="googleSignIn()">Sign in with Google</a>
-
-    <a class="button button-block button-positive" ng-click="showLogOutMenu()">Log Out</a>
-
-
-
-    <label class="item">
-      <button class="button button-block button-positive" ng-click="goToCreate()">Create new account</button>
-    </label>
+    <div ng-if="connected == true">
+      <p class="logout-text">Come back soon !</p>
+      <a class="button button-block button-positive logout-button" ng-click="showLogOutMenu()">Log Out</a>
+    </div>
   </ion-content>
 </ion-view>

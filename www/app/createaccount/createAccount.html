@@ -18,19 +18,22 @@
           <input type="text" ng-model="loginData.screenname">
         </label>
         <label class="item item-input">
-          <span class="input-label">Email</span>
+          <span class="input-label">Email <span class="red-text">*</span></span>
           <input type="email" ng-model="loginData.email">
         </label>
         <label class="item item-input">
-          <span class="input-label">Password</span>
+          <span class="input-label">Password <span class="red-text">*</span></span>
           <input type="password" ng-model="loginData.password">
         </label>
         <label class="item item-input">
-          <span class="input-label">Confirm password</span>
+          <span class="input-label">Confirm password <span class="red-text">*</span></span>
           <input type="password" ng-model="loginData.passwordconf">
         </label>
+        <label class="item item-input">
+          <span class="red-text small-text">* required field</span>
+        </label>
         <label class="item">
-          <button class="button button-block button-positive" type="submit">Create new account</button>
+          <button class="button button-block button-positive" type="submit">Create my account</button>
         </label>
       </div>
     </form>

@@ -4,6 +4,7 @@ angular.module('diyvt.mainMenuCtrl', [])
     $stateProvider
 
       .state('app.home', {
+        cache: false,
         url: '/home',
         views: {
           'menuContent': {
@@ -17,6 +18,10 @@ angular.module('diyvt.mainMenuCtrl', [])
   })
 
   .controller('MainMenuCtrl', function($scope, $state) {
+    if(window.localStorage.getItem('user') === null) {
+      $state.go('app.login');
+    }
+
     $scope.goToFavourite = function() {
       $state.go('app.favouritepost');
     };
@@ -26,23 +31,23 @@ angular.module('diyvt.mainMenuCtrl', [])
     };
 
     $scope.goToPersoStories = function() {
-      $state.go('app.post', {category: "personalstories"});
+      $state.go('app.post', {category: "Personal stories"});
     };
 
     $scope.goToScientific = function() {
-      $state.go('app.post', {category: "scientific"});
+      $state.go('app.post', {category: "Scientific"});
     };
 
     $scope.goToVtbooks = function() {
-      $state.go('app.post', {category: "vtbooks"});
+      $state.go('app.post', {category: "VT books"});
     };
 
     $scope.goToQa = function() {
-      $state.go('app.post', {category: "vtbooks"});
+      $state.go('app.post', {category: "qa"});
     };
 
     $scope.goToContact = function() {
-      $state.go('app.post', {category: "vtbooks"});
+      $state.go('app.post', {category: "qa"});
     };
 
     $scope.goToProfile = function() {

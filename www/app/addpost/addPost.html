@@ -1,17 +1,18 @@
 <ion-view view-title="Add new post">
-  <ion-header-bar>
-    <h1 class="title">New post</h1>
-  </ion-header-bar>
   <ion-content>
     <form ng-submit="createNewPost()">
       <div class="list">
         <label class="item item-input">
           <span class="input-label">Category</span>
-          <input type="text" ng-model="postData.category">
+          <select ng-init="postData.category = postData.category || fromCategory" ng-model="postData.category" ng-change="updateSubcategories()" class="no-decoration">
+            <option ng-repeat="category in categories" value="{{category.value}}">{{category.name}}</option>
+          </select>
         </label>
         <label class="item item-input">
           <span class="input-label">Subcategory</span>
-          <input type="text" ng-model="postData.subcategory">
+          <select ng-init="postData.subcategory = postData.subcategory || subcategories[0].name" ng-model="postData.subcategory" class="no-decoration">
+            <option ng-repeat="subcategory in subcategories" value="{{subcategory.value}}">{{subcategory.name}}</option>
+          </select>
         </label>
         <label class="item item-input">
           <span class="input-label">Title</span>
@@ -21,22 +22,32 @@
           <span class="input-label">Your post</span>
           <textarea rows="15" ng-model="postData.content"></textarea>
         </label>
-        <label class="item">
-          <button class="button button-block button-positive" type="submit">Post</button>
-        </label>
       </div>
-    </form>
 
-    <div ng-repeat="thumbnail in thumbnails">
-      <img ng-src="{{pathForImage(thumbnail)}}" class="thumbnail" style="width: 100px; height: 100px;">
-      <button class="button button-positive" ng-click="deleteMedia($index)">Delete media</button>
-    </div>
-    <div ng-repeat="link in links">
-      <p>{{link}}</p>
-      <button class="button button-positive" ng-click="deleteLink($index)">Delete link</button>
-    </div>
-    <button class="button button-positive" ng-click="loadMedia()">Attach media</button>
-    <button class="button button-positive" ng-click="addLink()">Add link</button>
+      <div class="button-media-container">
+        <button type="button" class="button button-positive button-media" ng-click="loadMedia()">Attach media</button>
+        <button type="button" class="button button-positive button-media" ng-click="addLink()">Add link</button>
+      </div>
+
+      <div ng-repeat="thumbnail in thumbnails" class="button-media-container">
+        <img ng-src="{{pathForImage(thumbnail)}}" class="thumbnail button-media" style="width: 100px; height: 100px;">
+        <div class="button-media">
+          <button type="button" class="button-media-delete" ng-click="deleteMedia($index)">
+            Delete media
+          </button>
+        </div>
+      </div>
+      <div ng-repeat="link in links" class="button-media-container">
+        <p class="button-media">{{link}}</p>
+        <div class="button-media">
+          <button type="button" class="button-link-delete" ng-click="deleteLink($index)">
+            Delete link
+          </button>
+        </div>
+      </div>
+
+      <button class="button button-block button-positive" type="submit">Post</button>
+    </form>
 
   </ion-content>
 </ion-view>

@@ -28,6 +28,13 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
     $ionicLoading,
     $ionicPopup
   ) {
+    $scope.connected = false;
+    if(window.localStorage.getItem('user') !== null) {
+      $scope.connected = true;
+    }
+
+    console.log($scope.connected);
+    console.log(window.localStorage.getItem('user'));
 
     //This method is executed when the user press the "Login with facebook" button
     $scope.facebookSignIn = function() {
@@ -45,7 +52,7 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
             getFacebookProfileInfo(success.authResponse)
               .then(function(profileInfo) {
                 console.log(success.authResponse);
-                // For the purpose of this example I will store user data on local storage
+
                 UserService.setUser({
                   authResponse: success.authResponse,
                   userID: profileInfo.id,
@@ -54,13 +61,23 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
                   picture : "http://graph.facebook.com/" + success.authResponse.userID + "/picture?type=large"
                 });
 
-                $state.go('app.home');
+                $http.get(link).then(function (res){
+                  var userId = GetUser.getUserId(user.email, res);
+                  window.localStorage.setItem('user', userId);
+                  $state.go('app.home');
+                });
               }, function(fail){
                 // Fail get profile info
                 console.log('profile info fail', fail);
               });
           }else{
-            $state.go('app.home');
+            var link = 'http://diyvt.leonard-peronnet.com/users';
+
+            $http.get(link).then(function (res){
+              var userId = GetUser.getUserId(user.email, res);
+              window.localStorage.setItem('user', userId);
+              $state.go('app.home');
+            });
           }
         } else {
           // If (success.status === 'not_authorized') the user is logged in to Facebook,
@@ -70,9 +87,11 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
 
           console.log('getLoginStatus', success.status);
 
+          /*
           $ionicLoading.show({
             template: 'Logging in...'
           });
+          */
 
           // Ask the permissions you need. You can learn more about
           // FB permissions here: https://developers.facebook.com/docs/facebook-login/permissions/v2.4
@@ -111,6 +130,7 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
             console.log(userId);
 
             if(userId > 0) {
+              window.localStorage.setItem('user', userId);
               $ionicLoading.hide();
               $state.go('app.home');
             }
@@ -124,6 +144,7 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
               };
 
               $http.post(link, $newUser).then(function (res){
+                window.localStorage.setItem('user', res.data.id);
                 console.log('nouvel utilisateur enregistré');
                 $ionicLoading.hide();
                 $state.go('app.home');
@@ -178,6 +199,8 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
               });
 
               window.localStorage.clear();
+              $state.reload();
+              console.log(window.localStorage.getItem('user'));
 
               // Facebook logout
               facebookConnectPlugin.logout(function(){
@@ -223,6 +246,7 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
             var userId = GetUser.getUserId(email, res);
 
             if(userId > 0) {
+              window.localStorage.setItem('user', userId);
               $ionicLoading.hide();
               $state.go('app.home');
             }
@@ -236,6 +260,7 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
               };
 
               $http.post(link, $newUser).then(function (res){
+                window.localStorage.setItem('user', res.data.id);
                 console.log('nouvel utilisateur enregistré');
                 $ionicLoading.hide();
                 $state.go('app.home');
@@ -278,15 +303,21 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
           $http.post(linkVerif, {password: password}).then(function (res){
             if(res.data) {
               window.localStorage.setItem('user', userId);
-              console.log('Utilisateur validé');
+              $state.go('app.home');
             }
             else {
-              console.log('Le mot de passe ne correspond pas');
+              $ionicPopup.alert({
+                title: 'Wrong password',
+                template: 'Password doesn\'t correspond to this email'
+              });
             }
           });
         }
         else {
-          console.log('aucun utilisateur ne correspond');
+          $ionicPopup.alert({
+            title: 'No corresponding user',
+            template: 'Your login entries are not valid'
+          });
         }
 
       });
@@ -369,6 +400,11 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
           }
         ]
       });
+    };
+
+    $scope.guestLogin = function() {
+      window.localStorage.setItem('user', -1);
+      $state.go('app.home');
     };
 
   });

@@ -19,7 +19,7 @@ angular.module('diyvt.profileCtrl', [])
   .controller('ProfileCtrl', function($scope, $http, $ionicPopup) {
 
     $scope.loginData = {};
-    var userId = 2;
+    var userId = window.localStorage.getItem('user');
 
     $scope.changePass = function () {
       $ionicPopup.show({
@@ -54,7 +54,7 @@ angular.module('diyvt.profileCtrl', [])
                             if (!$scope.data.password) {
                               e.preventDefault();
                             } else {
-                              var link = 'http://diyvt.leonard-peronnet.com/users/3';
+                              var link = 'http://diyvt.leonard-peronnet.com/users/' + userId;
 
                               var password = $scope.data.password;
 
@@ -83,7 +83,7 @@ angular.module('diyvt.profileCtrl', [])
     };
 
     $scope.updateProfile = function(){
-      var link = 'http://diyvt.leonard-peronnet.com/users/3';
+      var link = 'http://diyvt.leonard-peronnet.com/users/' + userId;
 
       var firstname = $scope.loginData.firstname;
       var lastname = $scope.loginData.lastname;

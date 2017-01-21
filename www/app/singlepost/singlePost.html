@@ -1,4 +1,4 @@
-<ion-view view-title="{{post.title}}">
+<ion-view view-title="{{post.category}}">
   <ion-nav-buttons side="right">
     <button class="button button-icon button-clear ion-plus" ng-click="options()">
     </button>
@@ -10,55 +10,134 @@
     </div>
 
     <div>
-      <button class="button button-block button-positive" ng-click="addToFavourites(post.id)">Add to favourites</button>
-      <button class="button button-block button-positive" ng-click="deleteFromFavourites(post.id)">Delete from favourites</button>
+      <div class="post-title-bar">
+        <div class="post-title">{{post.title}}</div>
+        <div ng-if="identified" class="favourite-button">
+          <span ng-if="isFav == false">
+            <img src="app/singlepost/icons/nofavourite.png" class="normal-icon" ng-click="addToFavourites(post.id)"/>
+          </span>
+          <span ng-if="isFav == true">
+            <img src="app/singlepost/icons/favourite.png" class="normal-icon" ng-click="deleteFromFavourites(post.id)"/>
+          </span>
+        </div>
+      </div>
+
+      <div ng-if="post.user.id == user.id">
+        <button class="button button-positive comment-button petit-bouton" ng-click="editPost(post.id)">Edit post</button>
+        <button class="button button-positive comment-button petit-bouton" ng-click="deletePost(post.id)">Delete post</button>
+      </div>
+
+      <p class="subcategory">{{post.subcategory}}</p>
 
       <ion-scroll direction="x">
-        <p>Images</p>
-        <img ng-repeat="image in images" ng-src="{{image}}" class="thumbnail" ng-click="showImages($index)"  style="width: 100px; height: 100px;">
-        <p>Videos</p>
-        <img ng-repeat="video in videos" ng-src="{{ video.replace('.mp4', '.png') }}" class="thumbnail" ng-click="playVideo($index)"  style="width: 100px; height: 100px;">
+        <div ng-show="images[0] != null">
+          <p>Images</p>
+          <img ng-repeat="image in images" ng-src="{{image}}" class="thumbnail" ng-click="showImages($index)"  style="width: 100px; height: 100px;">
+        </div>
+        <div ng-show="videos[0] != null">
+          <p>Videos</p>
+          <img ng-repeat="video in videos" ng-src="{{ video.replace('.mp4', '.png') }}" class="thumbnail" ng-click="playVideo($index)"  style="width: 100px; height: 100px;">
+        </div>
       </ion-scroll>
 
-      <div>
-        {{post.title}}
-      </div>
-      <div>
+      <div class="content">
         {{post.content}}
       </div>
       <div>
-        {{post.user.firstname}} {{post.date}}
+        <span class="little-text"><span class="writer-name">{{post.user.screenName}}</span>, le {{post.date}}</span>
       </div>
 
-      <div ng-repeat="comment in post.comments">
-        <div>
-          Upvote = {{comment.upvote}}, downvote = {{comment.downvote}}
+      <div class="comment-bouton-container">
+        <div class="comment-container" ng-repeat="comment in comments">
+          <div ng-if="identified == false">
+            <div ng-if="$index == 0" class="comment-header">
+              <div class="inline comment-header-text">Top comment</div>
+              <div class="inline to-right">
+                <div class="inline">
+                  <img src="app/singlepost/icons/upvote.png" class="small-icon"/>
+                </div> {{upvotes[$index]}},
+                <div class="inline">
+                  <img src="app/singlepost/icons/downvote.png" class="small-icon"/>
+                </div> {{downvotes[$index]}}
+              </div>
+            </div>
+
+            <div ng-if="$index != 0">
+              <div class="inline to-right">
+                <div class="inline">
+                  <img src="app/singlepost/icons/upvote.png" class="small-icon"/>
+                </div> {{upvotes[$index]}},
+                <div class="inline">
+                  <img src="app/singlepost/icons/downvote.png" class="small-icon"/>
+                </div> {{downvotes[$index]}}
+              </div>
+            </div>
+          </div>
+
+          <div ng-if="identified == true">
+            <div ng-if="$index == 0" class="comment-header">
+              <div class="inline comment-header-text">Top comment</div>
+              <div class="inline to-right">
+                <div class="inline">
+                  <img src="app/singlepost/icons/upvote.png" class="small-icon" ng-click="upvoteComment(comment.id, $index)"/>
+                </div> {{upvotes[$index]}},
+                <div class="inline">
+                  <img src="app/singlepost/icons/downvote.png" class="small-icon" ng-click="downvoteComment(comment.id, $index)"/>
+                </div> {{downvotes[$index]}}
+              </div>
+            </div>
+
+            <div ng-if="$index != 0">
+              <div class="inline to-right">
+                <div class="inline">
+                  <img src="app/singlepost/icons/upvote.png" class="small-icon" ng-click="upvoteComment(comment.id, $index)"/>
+                </div> {{upvotes[$index]}},
+                <div class="inline">
+                  <img src="app/singlepost/icons/downvote.png" class="small-icon" ng-click="downvoteComment(comment.id, $index)"/>
+                </div> {{downvotes[$index]}}
+              </div>
+            </div>
+          </div>
+
+          <div class="comment-left-padding">
+            {{comment.text}}
+          </div>
+          <div>
+            <span class="little-text comment-left-padding"><span class="writer-name">{{comment.user.screenName}}</span>, le {{comment.date}}</span>
+          </div>
+
+          <div ng-if="comment.user.id == user.id">
+            <div ng-show="editcommentclose[$index]">
+              <button class="button button-positive comment-button petit-bouton" ng-click="openEditComment($index)">Edit</button>
+              <button class="button button-positive comment-button petit-bouton" ng-click="deleteComment(comment.id)">Delete</button>
+            </div>
+
+            <form ng-show="editcommentopen[$index]" ng-submit="editComment(comment.id)">
+              <div class="list">
+                <label class="item item-input">
+                  <textarea rows="5" ng-model="editCommentData.content"></textarea>
+                </label>
+                <button class="button button-positive comment-button" type="submit">Edit comment</button>
+                <button type="button" class="button button-positive comment-button" ng-click="closeEditComment($index)">Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div>
-          {{comment.text}}
-        </div>
-        <div>
-          {{comment.user.firstname}}, le {{comment.date}}
+
+        <div ng-if="identified">
+          <div class="text-center button button-block button-positive" ng-hide="commentopen" ng-click="openComment()">Add new comment</div>
+
+          <form ng-show="commentopen" ng-submit="postComment(post.id)">
+            <div class="list">
+              <label class="item item-input">
+                <textarea rows="5" ng-model="commentData.content"></textarea>
+              </label>
+              <button class="button button-positive comment-button" type="submit">Post comment</button>
+              <button type="button" ng-show="commentopen" class="button button-positive comment-button" ng-click="closeComment()">Cancel</button>
+            </div>
+          </form>
         </div>
       </div>
-
-      <button ng-hide="commentopen" class="button button-block button-positive" ng-click="openComment()">Add comment</button>
-
-      <form ng-show="commentopen" ng-submit="postComment(post.id)">
-        <div class="list">
-          <label class="item item-input">
-            <span class="input-label">Your comment</span>
-            <textarea rows="5" ng-model="commentData.content"></textarea>
-          </label>
-          <label class="item">
-            <button class="button button-block button-positive" type="submit">Post comment</button>
-          </label>
-        </div>
-      </form>
-
-      <button ng-show="commentopen" class="button button-block button-positive" ng-click="closeComment()">Cancel</button>
-
-      <hr/>
     </div>
 
   </ion-content>

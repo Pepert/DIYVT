@@ -4,6 +4,7 @@ angular.module('diyvt.createAccountCtrl', [])
     $stateProvider
 
       .state('app.newaccount', {
+        cache: false,
         url: '/newaccount',
         views: {
           'menuContent': {
@@ -30,16 +31,21 @@ angular.module('diyvt.createAccountCtrl', [])
       var password = $scope.loginData.password;
       var passwordConf = $scope.loginData.passwordconf;
 
+      if(passwordConf == null || password == null || email == null) {
+        $ionicPopup.alert({
+          title: 'Empty required field',
+          template: 'Some required fields are missing'
+        });
+      }
+
       if(passwordConf != password) {
-        $scope.showAlert = function() {
-          $ionicPopup.alert({
-            title: 'Confirmation incorrect',
-            template: 'The confirmation password has to be the same as the previous password entry'
-          });
-        };
+        $ionicPopup.alert({
+          title: 'Confirmation incorrect',
+          template: 'The confirmation password has to be the same as the previous password entry'
+        });
       }
       else {
-        if(isEmpty(screenName)) {
+        if(screenName == "") {
           screenName = firstname + " " + lastname;
         }
 
@@ -53,6 +59,9 @@ angular.module('diyvt.createAccountCtrl', [])
         };
 
         $http.post(link, $newUser).then(function (res){
+          var userId = res.id;
+          window.localStorage.setItem('user', userId);
+          $state.go('app.home');
           console.log('nouvel utilisateur enregistré');
         });
       }
