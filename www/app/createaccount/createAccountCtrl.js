@@ -17,7 +17,7 @@ angular.module('diyvt.createAccountCtrl', [])
     $urlRouterProvider.otherwise('/app/newaccount');
   })
 
-  .controller('CreateAccountCtrl', function($scope, $http, $ionicPopup) {
+  .controller('CreateAccountCtrl', function($state, $scope, $http, $ionicPopup) {
 
     $scope.loginData = {};
 
@@ -61,8 +61,11 @@ angular.module('diyvt.createAccountCtrl', [])
         $http.post(link, $newUser).then(function (res){
           var userId = res.id;
           window.localStorage.setItem('user', userId);
+          $ionicPopup.alert({
+            title: 'Account created',
+            template: 'Your new account has been created'
+          });
           $state.go('app.home');
-          console.log('nouvel utilisateur enregistré');
         });
       }
     };

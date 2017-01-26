@@ -1,0 +1,35 @@
+<ion-view view-title="Doctors & Contact">
+  <ion-content>
+    <h3 class="text-center">
+      List of doctors
+    </h3>
+    <p class="text-center">
+      Coming soon
+    </p>
+    <hr/>
+    <h3 class="text-center">
+      In the meantime, feel free to contact us through this form :
+    </h3>
+
+    <div class="container">
+      <form ng-submit="sendEmail()">
+        <div class="list">
+          <label class="item item-input">
+            <span class="input-label">Subject</span>
+            <input type="text" ng-model="emailData.subject">
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Your email adress</span>
+            <input type="email" ng-model="emailData.email">
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Your post</span>
+            <textarea rows="15" ng-model="emailData.content"></textarea>
+          </label>
+        </div>
+
+        <button class="button button-block button-positive" type="submit">Send message</button>
+      </form>
+    </div>
+  </ion-content>
+</ion-view>

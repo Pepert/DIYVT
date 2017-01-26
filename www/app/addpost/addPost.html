@@ -4,13 +4,13 @@
       <div class="list">
         <label class="item item-input">
           <span class="input-label">Category</span>
-          <select ng-init="postData.category = postData.category || fromCategory" ng-model="postData.category" ng-change="updateSubcategories()" class="no-decoration">
+          <select ng-model="postData.category" required ng-options='option.value as option.name for option in categories' class="no-decoration" ng-change="updateSubcategories()">
             <option ng-repeat="category in categories" value="{{category.value}}">{{category.name}}</option>
           </select>
         </label>
         <label class="item item-input">
           <span class="input-label">Subcategory</span>
-          <select ng-init="postData.subcategory = postData.subcategory || subcategories[0].name" ng-model="postData.subcategory" class="no-decoration">
+          <select ng-model="postData.subcategory" required ng-options='option.value as option.name for option in subcategories' class="no-decoration">
             <option ng-repeat="subcategory in subcategories" value="{{subcategory.value}}">{{subcategory.name}}</option>
           </select>
         </label>

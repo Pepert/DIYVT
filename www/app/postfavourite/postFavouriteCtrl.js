@@ -33,6 +33,9 @@ angular.module('diyvt.postFavouriteCtrl', [])
     var link = 'http://diyvt.leonard-peronnet.com/favourites';
 
     var userId = window.localStorage.getItem('user');
+    if(userId == null || userId == -1) {
+      $state.go('app.login');
+    }
 
     var data = {
       user_id: userId

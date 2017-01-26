@@ -1,27 +1,44 @@
 <ion-view view-title="{{category}}">
   <ion-nav-buttons side="right">
-    <button ng-if="identified == true" class="button button-icon button-clear ion-plus" ng-click="options()"></button>
+    <button ng-if="identified == true" class="button button-icon button-clear ion-plus bouton-option" ng-click="options()"></button>
   </ion-nav-buttons>
-  <ion-content>
-
-    <div id="menupost" ng-show="menupostopen" ng-click="goToAddPost()">
-      <p>Add a new post</p>
-    </div>
+  <div class="bar bar-subheader search-bar">
+    <span id="zone-loupe" ng-click="searchTerm()"><img src="app/post/icons/lens.png" class="header-icon search-icon"/></span>
+    <input id="recherche" type="text" ng-model="searchData.content" title="Search">
+  </div>
+  <div id="menupost" class="bar bar-subheader" ng-show="menupostopen" ng-click="goToAddPost()">
+    <p><img src="app/singlepost/icons/create.png" class="header-icon"/> Add a new post</p>
+  </div>
+  <ion-content class="top-space">
 
     <div ng-repeat="post in posts">
       <div>
-        {{post.title}}
+        <div class="post-title-bar-many">
+          <div class="post-title">{{post.title}}</div>
+        </div>
       </div>
-      <div>
+
+      <p class="subcategory">{{post.subcategory}}</p>
+
+      <div class="content">
         {{post.content}}
       </div>
+
       <div>
-        {{post.user.firstname}} {{post.date}}
+        <span class="little-text"><span class="writer-name">
+          <span ng-if="post.user.screenName != null">
+              {{post.user.screenName}}
+          </span>
+          <span ng-if="post.user.screenName == null">
+            Anonymous
+          </span>
+        </span>, le {{post.date | date:'dd/MM/yyyy'}}</span>
       </div>
 
-      <button class="button button-block button-positive" ng-click="goToPost(post.id)">See full post</button>
+      <div class="text-center button-list-post">
+        <button class="button button-positive" ng-click="goToPost(post.id)">See full post</button>
 
-      <hr/>
+      </div>
     </div>
 
   </ion-content>

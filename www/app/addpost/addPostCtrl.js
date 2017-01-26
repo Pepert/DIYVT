@@ -28,7 +28,8 @@ angular.module('diyvt.addPostCtrl', [])
     $cordovaFileTransfer,
     $cordovaDevice,
     $ionicPopup,
-    $ionicLoading
+    $ionicLoading,
+    $ionicPlatform
   ) {
     $scope.postData = {};
     $scope.medias = {};
@@ -37,7 +38,6 @@ angular.module('diyvt.addPostCtrl', [])
     $scope.links = {};
     $scope.data = {};
     var post;
-    $scope.fromCategory = $stateParams.category;
     $scope.categories = [
       {value: "Personal stories", name: "Personal stories"},
       {value: "Scientific", name: "Scientific"},
@@ -49,10 +49,14 @@ angular.module('diyvt.addPostCtrl', [])
       {value: "VT or eye surgery", name: "VT or eye surgery"},
       {value: "Tips to foster VT", name: "Tips to foster VT"}
     ];
-    $scope.subcategories = [
-      {value: "sub1", name: "sub1"},
-      {value: "sub2", name: "sub2"}
-    ];
+    $scope.subcategories = [{
+      value: "No subcategory", name: "No subcategory"
+    }];
+    $scope.postData = {
+      subcategory : $scope.subcategories[0].value,
+      category : $scope.categories[0].value
+    };
+
     var medias = [];
     var thumbnails = [];
     var videoThumbnails = [];
@@ -60,11 +64,67 @@ angular.module('diyvt.addPostCtrl', [])
     var links = [];
     var options = {};
 
-    /*
+    function setSubcategories() {
+      switch($scope.postData.category) {
+        case "VT exercises":
+        case "VT tools":
+          $scope.subcategories = [
+            {value: "Real space VT exercises", name: "Real space VT exercises"},
+            {value: "Real space VT tools", name: "Real space VT tools"},
+            {value: "Computerized VT exercises", name: "Computerized VT exercises"},
+            {value: "Virtual reality", name: "Virtual reality"},
+            {value: "Anaglyph", name: "Anaglyph"},
+            {value: "Polarized", name: "Polarized"},
+            {value: "Stereograms", name: "Stereograms"},
+            {value: "Balance", name: "Balance"},
+            {value: "TDSC", name: "TDSC"},
+            {value: "Syntonic light therapy", name: "Syntonic light therapy"},
+            {value: "Other", name: "Other"}
+          ];
+          $scope.postData.subcategory = $scope.subcategories[0].value;
+          break;
+        case "Optics":
+          $scope.subcategories = [
+            {value: "Prisms", name: "Prisms"},
+            {value: "Glasses", name: "Glasses"},
+            {value: "Contact", name: "Contact"}
+          ];
+          $scope.postData.subcategory = $scope.subcategories[0].value;
+          break;
+        case "Conditions & symptoms":
+          $scope.subcategories = [
+            {value: "Strabismus", name: "Strabismus"},
+            {value: "Amblyopia", name: "Amblyopia"},
+            {value: "Traumatic Brain Injury (TBI)", name: "Traumatic Brain Injury (TBI)"},
+            {value: "Amblyopia", name: "Amblyopia"},
+            {value: "Menière's syndrome", name: "Menière's syndrome"},
+            {value: "Convergence insufficiency", name: "Convergence insufficiency"},
+            {value: "Divergence insufficiency", name: "Divergence insufficiency"}
+          ];
+          $scope.postData.subcategory = $scope.subcategories[0].value;
+          break;
+        default:
+          $scope.subcategories = [{
+            value: "No subcategory", name: "No subcategory"
+          }];
+          $scope.postData.subcategory = $scope.subcategories[0].value;
+      }
+    }
+
+    angular.element(document).ready(function () {
+      if($stateParams.category) {
+        if($stateParams.category == "search") {
+          $scope.postData.category = $scope.categories[0].value;
+        } else {
+          $scope.postData.category = $stateParams.category;
+        }
+      }
+      setSubcategories();
+    });
+
     $scope.updateSubcategories = function() {
-      $scope.subcategory = $scope.postData.category;
+      setSubcategories();
     };
-    */
 
     $scope.loadMedia = function() {
       $ionicPopup.show({
@@ -144,7 +204,6 @@ angular.module('diyvt.addPostCtrl', [])
                       $scope.videoThumbnails = videoThumbnails;
                       $scope.$apply();
                     }, function(error) {
-                      console.log(error);
                     });
 
 
@@ -154,7 +213,6 @@ angular.module('diyvt.addPostCtrl', [])
                   });
                 }
               }, function(error) {
-                console.log(error);
               }
             );
           } else {
@@ -270,7 +328,6 @@ angular.module('diyvt.addPostCtrl', [])
     };
 
     $scope.goToLink = function(index) {
-      console.log(links[index]);
       window.open(links[index], '_system', 'location=yes');
     };
 
@@ -316,9 +373,7 @@ angular.module('diyvt.addPostCtrl', [])
             };
 
             $cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
-              console.log(result);
             }, function(err) {
-              console.log(err);
             });
           });
         }
@@ -341,7 +396,6 @@ angular.module('diyvt.addPostCtrl', [])
             };
 
             $cordovaFileTransfer.upload(url, targetPath, options).then(function(result) {
-              console.log(result);
               if (index === array.length - 1){
                 $scope.showAlert('Success', 'Post upload finished.');
                 medias = [];
@@ -376,12 +430,13 @@ angular.module('diyvt.addPostCtrl', [])
 
                 $http.post(link, data).then(function (res){
                   $ionicLoading.hide();
-                  console.log('nouveau post enregistré');
+                  $ionicPlatform.registerBackButtonAction(function (event) {
+                    event.preventDefault();
+                  }, 100);
                   $state.go('app.post', {category: category});
                 });
               }
             }, function(err) {
-              console.log(err);
             });
           });
         } else {
@@ -409,7 +464,6 @@ angular.module('diyvt.addPostCtrl', [])
 
           $http.post(link, data).then(function (res){
             $ionicLoading.hide();
-            console.log('nouveau post enregistré');
             $state.go('app.post', {category: category});
           });
         }

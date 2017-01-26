@@ -2,6 +2,10 @@ html, body,
 .scroll
 {
   height: 100%;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .container {
@@ -55,6 +59,58 @@ html, body,
   height: 70px;
   -webkit-filter: invert(1);
   filter: invert(1);
+}
+
+.header-icon {
+  width: 20px;
+  height: 20px;
+  -webkit-filter: invert(1);
+  filter: invert(1);
+}
+
+#zone-loupe {
+  background-color: #6fa8dc;
+  height: 100%;
+  width: 15%;
+}
+
+#recherche {
+  height: 100%;
+  width: 90%;
+  background-color: #e6e6e6;
+  padding-left: 15px;
+}
+
+#search-bar {
+  z-index: 500;
+  padding: 0;
+}
+
+.bar, .bar-subheader {
+  padding: 0;
+}
+
+#menupost {
+  margin-left: 40%;
+  border: black 1px solid;
+  padding: 8px 10px 0 10px;
+  background-color: #6fa8dc;
+  color: white;
+  z-index: 999;
+}
+
+.search-icon {
+  margin: 10px 0 0 10px;
+  width: 28px;
+  height: 28px;
+}
+
+.top-space {
+  padding-top: 45px;
+}
+
+.thumbnail {
+  display: inline-block;
 }
 
 .popup-vertical-buttons,
@@ -203,6 +259,20 @@ html, body,
 * — List and single post —
 */
 
+.post-title-bar-many {
+  background-color: #9fc5f8;
+  padding-top: 8px;
+  font-size: 1.1em;
+  font-weight: bold;
+  height: 40px;
+  text-align: center;
+}
+
+.button-list-post {
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
 .post-title-bar {
   background-color: #9fc5f8;
   text-align: center;
@@ -210,6 +280,8 @@ html, body,
 }
 
 .post-title {
+  font-size: 1.3em;
+  font-weight: bold;
   display: inline-block;
   width: 85%;
 }

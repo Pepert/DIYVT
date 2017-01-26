@@ -1,24 +1,23 @@
-angular.module('diyvt.mainMenuCtrl', [])
+angular.module('diyvt.qaCtrl', [])
 
   .config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
 
-      .state('app.home', {
+      .state('app.qa', {
         cache: false,
-        url: '/home',
+        url: '/qa',
         views: {
           'menuContent': {
-            templateUrl: 'app/mainmenu/mainMenu.html',
-            controller: 'MainMenuCtrl'
+            templateUrl: 'app/qa/qa.html',
+            controller: 'QaCtrl'
           }
         }
       });
     // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/app/home');
+    $urlRouterProvider.otherwise('/app/qa');
   })
 
-  .controller('MainMenuCtrl', function($scope, $state) {
-    window.localStorage.removeItem('search');
+  .controller('QaCtrl', function($scope, $state) {
     if(window.localStorage.getItem('user') === null) {
       $state.go('app.login');
     }
@@ -44,11 +43,11 @@ angular.module('diyvt.mainMenuCtrl', [])
     };
 
     $scope.goToQa = function() {
-      $state.go('app.qa');
+      $state.go('app.post', {category: "qa"});
     };
 
     $scope.goToContact = function() {
-      $state.go('app.contact');
+      $state.go('app.post', {category: "qa"});
     };
 
     $scope.goToProfile = function() {

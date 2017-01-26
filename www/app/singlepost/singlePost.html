@@ -1,12 +1,14 @@
 <ion-view view-title="{{post.category}}">
   <ion-nav-buttons side="right">
-    <button class="button button-icon button-clear ion-plus" ng-click="options()">
+    <button ng-if="identified == true" class="button button-icon button-clear ion-plus" ng-click="options()">
     </button>
   </ion-nav-buttons>
   <ion-content>
 
-    <div id="menupost" ng-show="menupostopen" ng-click="goToAddPost()">
-      <p>Add a new post</p>
+    <div id="menupost" ng-show="menupostopen">
+      <p ng-click="goToAddPost()"><img src="app/singlepost/icons/create.png" class="small-icon"/> Add a new post</p>
+      <hr/>
+      <p ng-click="speakText()"><img src="app/singlepost/icons/volume.png" class="small-icon"/> Post to speech</p>
     </div>
 
     <div>
@@ -43,8 +45,23 @@
       <div class="content">
         {{post.content}}
       </div>
+
+      <div ng-show="links[0] != null">
+        <p>Links</p>
+        <div ng-repeat="wantedLink in links">
+          <a href="#" ng-click="goToNewLink(wantedLink)">{{wantedLink}}</a>
+        </div>
+      </div>
+
       <div>
-        <span class="little-text"><span class="writer-name">{{post.user.screenName}}</span>, le {{post.date}}</span>
+        <span class="little-text"><span class="writer-name">
+          <span ng-if="post.user.screenName != null">
+              {{post.user.screenName}}
+          </span>
+          <span ng-if="post.user.screenName == null">
+            Anonymous
+          </span>
+        </span>, le {{post.date | date:'dd/MM/yyyy'}}</span>
       </div>
 
       <div class="comment-bouton-container">
@@ -103,7 +120,14 @@
             {{comment.text}}
           </div>
           <div>
-            <span class="little-text comment-left-padding"><span class="writer-name">{{comment.user.screenName}}</span>, le {{comment.date}}</span>
+            <span class="little-text comment-left-padding"><span class="writer-name">
+              <span ng-if="comment.user.screenName != null">
+              {{comment.user.screenName}}
+              </span>
+              <span ng-if="comment.user.screenName == null">
+                Anonymous
+              </span>
+            </span>, le {{comment.date | date:'dd/MM/yyyy'}}</span>
           </div>
 
           <div ng-if="comment.user.id == user.id">

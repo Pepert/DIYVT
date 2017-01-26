@@ -20,6 +20,7 @@ angular.module('diyvt.singlepostCtrl', [])
   .controller('SinglePostCtrl', function($scope, $state, $stateParams, $http, $ionicModal, $ionicPopup) {
     $scope.category = $stateParams.category;
     var postId = $stateParams.id;
+    var textToSpeech = "";
     $scope.commentopen = false;
     $scope.editcommentopen = [];
     $scope.editcommentclose = [];
@@ -33,6 +34,7 @@ angular.module('diyvt.singlepostCtrl', [])
     $scope.isFav = false;
     $scope.images = [];
     $scope.videos = [];
+    $scope.links = [];
     $scope.upvotes = [];
     $scope.downvotes = [];
     $scope.identified = false;
@@ -61,7 +63,7 @@ angular.module('diyvt.singlepostCtrl', [])
 
     $http.get(link).then(function(res){
       $scope.post = res.data;
-      console.log(res.data.user);
+      textToSpeech += $scope.post.content + ". ";
 
       angular.forEach($scope.post.srcUrls, function(value, key) {
         if(value.endsWith(".mp4")) {
@@ -69,6 +71,10 @@ angular.module('diyvt.singlepostCtrl', [])
         } else if(value.endsWith(".jpg")) {
           $scope.images.push(value);
         }
+      });
+
+      angular.forEach($scope.post.links, function(value, key) {
+        $scope.links.push(value);
       });
 
       $scope.showImages = function(index) {
@@ -113,6 +119,8 @@ angular.module('diyvt.singlepostCtrl', [])
         $scope.comments.sort(compare);
 
         angular.forEach($scope.comments, function(value, key) {
+          textToSpeech += "Comment number " + (key+1) + ": ";
+          textToSpeech += value.text + ". ";
           $scope.upvotes[key] = value.upvote;
           $scope.downvotes[key] = value.downvote;
           $scope.editcommentopen[key] = false;
@@ -120,6 +128,19 @@ angular.module('diyvt.singlepostCtrl', [])
         });
       });
     });
+
+    $scope.speakText = function() {
+      window.TTS.speak({
+        text: textToSpeech,
+        locale: 'en-GB',
+        rate: 1
+      }, function () {
+        // Do Something after success
+      }, function (reason) {
+        // Handle the error case
+        alert(reason+"");
+      });
+    };
 
     $scope.openComment = function() {
       $scope.commentopen = true;
@@ -164,8 +185,6 @@ angular.module('diyvt.singlepostCtrl', [])
 
       $http.post(favouriteLink, data).then(function (res){
         if(res.data) {
-          console.log(res.data);
-          console.log('Article favoris ajouté');
           $state.go('app.singlepost', {category: $stateParams.category, id: postId});
           $scope.isFav = true;
         }
@@ -183,8 +202,6 @@ angular.module('diyvt.singlepostCtrl', [])
 
       $http.post(deleteFavLink, data).then(function (res){
         if(res.data) {
-          console.log(res.data);
-          console.log('Article correctement supprimé');
           $state.go('app.singlepost', {category: $stateParams.category, id: postId});
           $scope.isFav = false;
         }
@@ -192,7 +209,7 @@ angular.module('diyvt.singlepostCtrl', [])
     };
 
     $scope.goToAddPost = function() {
-      $state.go('app.newpost');
+      $state.go('app.newpost', {category: $stateParams.category});
     };
 
     $scope.editPost = function(postId) {
@@ -305,4 +322,9 @@ angular.module('diyvt.singlepostCtrl', [])
         $state.reload();
       });
     };
+
+    $scope.goToNewLink = function(wantedLink) {
+      window.open(wantedLink,'_blank','location=yes');
+      return false;
+    }
   });

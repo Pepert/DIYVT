@@ -5,6 +5,7 @@ angular.module('diyvt.managevtCtrl', [])
 
       .state('app.managevt', {
         url: '/managevt',
+        cache: false,
         views: {
           'menuContent': {
             templateUrl: 'app/managevt/managevt.html',
@@ -16,7 +17,7 @@ angular.module('diyvt.managevtCtrl', [])
     $urlRouterProvider.otherwise('/app/managevt');
   })
 
-  .controller('ManagevtCtrl', function($scope, $state, $ionicModal, $timeout) {
+  .controller('ManagevtCtrl', function($scope, $state) {
     $scope.goToVtExercises = function() {
       $state.go('app.post', {category: "VT exercises"});
     };

@@ -5,6 +5,7 @@ angular.module('diyvt.profileCtrl', [])
 
       .state('app.profile', {
         url: '/profile',
+        cache: false,
         views: {
           'menuContent': {
             templateUrl: 'app/profile/profile.html',
@@ -16,10 +17,24 @@ angular.module('diyvt.profileCtrl', [])
     $urlRouterProvider.otherwise('/app/profile');
   })
 
-  .controller('ProfileCtrl', function($scope, $http, $ionicPopup) {
+  .controller('ProfileCtrl', function($state, $scope, $http, $ionicPopup) {
 
     $scope.loginData = {};
+    $scope.data = {};
     var userId = window.localStorage.getItem('user');
+
+    if(userId == null || userId == -1) {
+      $state.go('app.login');
+    } else {
+      var getUserLink = 'http://diyvt.leonard-peronnet.com/users/' + userId;
+      $http.get(getUserLink).then(function(res) {
+        var user = res.data;
+        $scope.loginData.firstname = user.firstname;
+        $scope.loginData.lastname = user.lastname;
+        $scope.loginData.screenName = user.screenName;
+      });
+    }
+
 
     $scope.changePass = function () {
       $ionicPopup.show({
@@ -54,7 +69,7 @@ angular.module('diyvt.profileCtrl', [])
                             if (!$scope.data.password) {
                               e.preventDefault();
                             } else {
-                              var link = 'http://diyvt.leonard-peronnet.com/users/' + userId;
+                              var link = 'http://diyvt.leonard-peronnet.com/users/pass/' + userId;
 
                               var password = $scope.data.password;
 
@@ -62,8 +77,11 @@ angular.module('diyvt.profileCtrl', [])
                                 password: password
                               };
 
-                              $http.put(link, updatedUser).then(function (res){
-                                console.log('profil mis à jour');
+                              $http.post(link, updatedUser).then(function (res){
+                                $ionicPopup.alert({
+                                  title: 'Password updated',
+                                  template: 'Your password is updated'
+                                });
                               });
                             }
                           }
@@ -72,7 +90,10 @@ angular.module('diyvt.profileCtrl', [])
                     });
                   }
                   else {
-                    console.log('Le mot de passe ne correspond pas');
+                    $ionicPopup.alert({
+                      title: 'Wrong password',
+                      template: 'The password you entered is not correct'
+                    });
                   }
                 });
               }
@@ -87,7 +108,19 @@ angular.module('diyvt.profileCtrl', [])
 
       var firstname = $scope.loginData.firstname;
       var lastname = $scope.loginData.lastname;
-      var screenName = $scope.loginData.screenname;
+      var screenName = $scope.loginData.screenName;
+
+      if(firstname == null) {
+        firstname = "";
+      }
+
+      if(lastname == null) {
+        lastname = "";
+      }
+
+      if(screenName == null) {
+        screenName = "";
+      }
 
       var updatedUser = {
         firstname: firstname,
@@ -96,7 +129,20 @@ angular.module('diyvt.profileCtrl', [])
       };
 
       $http.put(link, updatedUser).then(function (res){
-        console.log('profil mis à jour');
+        $ionicPopup.show({
+          template: 'Your profile is updated',
+          title: 'Profile updated',
+          scope: $scope,
+          buttons: [
+            {
+              text: '<b>Ok</b>',
+              type: 'button-positive',
+              onTap: function(e) {
+                $state.go('app.home');
+              }
+            }
+          ]
+        });
       });
     };
 

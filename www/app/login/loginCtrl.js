@@ -26,15 +26,14 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
     $q,
     UserService,
     $ionicLoading,
-    $ionicPopup
+    $ionicPopup,
+    $ionicPlatform
   ) {
+    $scope.data = {};
     $scope.connected = false;
     if(window.localStorage.getItem('user') !== null) {
       $scope.connected = true;
     }
-
-    console.log($scope.connected);
-    console.log(window.localStorage.getItem('user'));
 
     //This method is executed when the user press the "Login with facebook" button
     $scope.facebookSignIn = function() {
@@ -43,7 +42,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
           // The user is logged in and has authenticated your app, and response.authResponse supplies
           // the user's ID, a valid access token, a signed request, and the time the access token
           // and signed request each expire
-          console.log('getLoginStatus', success.status);
 
           // Check if we have our user saved
           var user = UserService.getUser('facebook');
@@ -51,8 +49,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
           if(!user.userID){
             getFacebookProfileInfo(success.authResponse)
               .then(function(profileInfo) {
-                console.log(success.authResponse);
-
                 UserService.setUser({
                   authResponse: success.authResponse,
                   userID: profileInfo.id,
@@ -68,7 +64,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
                 });
               }, function(fail){
                 // Fail get profile info
-                console.log('profile info fail', fail);
               });
           }else{
             var link = 'http://diyvt.leonard-peronnet.com/users';
@@ -84,8 +79,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
           // but has not authenticated your app
           // Else the person is not logged into Facebook,
           // so we're not sure if they are logged into this app or not.
-
-          console.log('getLoginStatus', success.status);
 
           /*
           $ionicLoading.show({
@@ -127,8 +120,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
           $http.get(link).then(function (res){
 
             var userId = GetUser.getUserId(email, res);
-            console.log(userId);
-
             if(userId > 0) {
               window.localStorage.setItem('user', userId);
               $ionicLoading.hide();
@@ -145,7 +136,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
 
               $http.post(link, $newUser).then(function (res){
                 window.localStorage.setItem('user', res.data.id);
-                console.log('nouvel utilisateur enregistré');
                 $ionicLoading.hide();
                 $state.go('app.home');
               });
@@ -153,12 +143,10 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
 
           });
         }, function(fail){
-          console.log('profile info fail', fail);
         });
     };
 
     var fbLoginError = function(error){
-      console.log('fbLoginError', error);
       $ionicLoading.hide();
     };
 
@@ -168,11 +156,9 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
 
       facebookConnectPlugin.api('/me?fields=email,name&access_token=' + authResponse.accessToken, null,
         function (response) {
-          console.log(response);
           info.resolve(response);
         },
         function (response) {
-          console.log(response);
           info.reject(response);
         }
       );
@@ -199,8 +185,10 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
               });
 
               window.localStorage.clear();
+              $ionicPlatform.registerBackButtonAction(function (event) {
+                event.preventDefault();
+              }, 100);
               $state.reload();
-              console.log(window.localStorage.getItem('user'));
 
               // Facebook logout
               facebookConnectPlugin.logout(function(){
@@ -234,7 +222,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
       window.plugins.googleplus.login(
         {},
         function (user_data) {
-          console.log(user_data);
 
           var email = user_data.email;
           var id = user_data.userId;
@@ -261,7 +248,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
 
               $http.post(link, $newUser).then(function (res){
                 window.localStorage.setItem('user', res.data.id);
-                console.log('nouvel utilisateur enregistré');
                 $ionicLoading.hide();
                 $state.go('app.home');
               });
@@ -294,7 +280,6 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
       var link = 'http://diyvt.leonard-peronnet.com/users';
 
       $http.get(link).then(function (res){
-
         var userId = GetUser.getUserId(email, res);
 
         if(userId > 0) {
@@ -355,43 +340,27 @@ angular.module('diyvt.loginCtrl', ['diyvt.getuser'])
 
                     $http.get(linkNewPass).then(function (res){
                       if(res.data) {
-                        alertPopup = $scope.showAlert = function() {
-                          $ionicPopup.alert({
-                            title: 'New password sent',
-                            template: 'You can now connect with the password that has been sent on your e-mail address.' +
-                            ' You can change this password through your profile page'
-                          });
-                        };
-
-                        alertPopup.then(function(res) {
-                          $state.go('app.login');
+                        $ionicPopup.alert({
+                          title: 'New password sent',
+                          template: 'You can now connect with the password that has been sent on your e-mail address.' +
+                          ' You can change this password through your profile page'
                         });
                       }
                       else {
-                        alertPopup = $scope.showAlert = function() {
-                          $ionicPopup.alert({
-                            title: 'Error',
-                            template: 'A problem has occured, please try again.'
-                          });
-                        };
-
-                        alertPopup.then(function(res) {
-                          $state.go('app.login');
+                        $ionicPopup.alert({
+                          title: 'Error',
+                          template: 'A problem has occured, please try again.'
                         });
+                        $state.go('app.login');
                       }
                     });
                   }
                   else {
-                    alertPopup = $scope.showAlert = function() {
-                      $ionicPopup.alert({
-                        title: 'Unknown user',
-                        template: 'There is no user identified by this e-mail address. You can use it to create a new account.'
-                      });
-                    };
-
-                    alertPopup.then(function(res) {
-                      $state.go('app.newaccount');
+                    $ionicPopup.alert({
+                      title: 'Unknown user',
+                      template: 'There is no user identified by this e-mail address. You can use it to create a new account.'
                     });
+                    $state.go('app.newaccount');
                   }
 
                 });
